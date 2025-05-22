@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Customer Churn Prediction</title>
+  <style>
+    /* Reset & base */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 40px 20px;
+      color: #333;
+    }
+    .container {
+      background: white;
+      max-width: 480px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgb(0 0 0 / 0.1);
+      padding: 30px 40px;
+    }
+    h1 {
+      text-align: center;
+      color: #0f4c81;
+      margin-bottom: 30px;
+      font-weight: 700;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #555;
+    }
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px 14px;
+      margin-bottom: 20px;
+      border: 1.8px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #0f4c81;
+      box-shadow: 0 0 8px rgb(15 76 129 / 0.25);
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #0f4c81;
+      border: none;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background: #0b3660;
+    }
+    .result {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      padding: 15px;
+      border-radius: 8px;
+      display: none;
+    }
+    .result.churn {
+      background-color: #fddede;
+      color: #d32f2f;
+      border: 1px solid #d32f2f;
+    }
+    .result.no-churn {
+      background-color: #d9f5dd;
+      color: #2e7d32;
+      border: 1px solid #2e7d32;
+    }
+  </style>
+</head>
+<script src="app.js"></script>
+<body>
+
+  <div class="container">
+    <h1>Customer Churn Prediction</h1>
+
+    <form id="churnForm">
+      <label for="creditScore">Credit Score</label>
+      <input type="number" id="creditScore" name="creditScore" min="300" max="850" required />
+
+      <label for="age">Age</label>
+      <input type="number" id="age" name="age" min="18" max="100" required />
+
+      <label for="tenure">Tenure (years with bank)</label>
+      <input type="number" id="tenure" name="tenure" min="0" max="10" required />
+
+      <label for="balance">Balance ($)</label>
+      <input type="number" id="balance" name="balance" min="0" step="0.01" required />
+
+      <label for="numOfProducts">Number of Products</label>
+      <select id="numOfProducts" name="numOfProducts" required>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+
+      <label for="hasCreditCard">Has Credit Card?</label>
+      <select id="hasCreditCard" name="hasCreditCard" required>
+        <option value="1">Yes</option>
+        <option value="0">No</option>
+      </select>
+
+      <label for="isActiveMember">Is Active Member?</label>
+      <select id="isActiveMember" name="isActiveMember" required>
+        <option value="1">Yes</option>
+        <option value="0">No</option>
+      </select>
+
+      <label for="estimatedSalary">Estimated Salary ($)</label>
+      <input type="number" id="estimatedSalary" name="estimatedSalary" min="0" step="0.01" required />
+
+      <label for="geography">Geography</label>
+      <select id="geography" name="geography" required>
+        <option value="France">France</option>
+        <option value="Germany">Germany</option>
+        <option value="Spain">Spain</option>
+      </select>
+
+      <label for="gender">Gender</label>
+      <select id="gender" name="gender" required>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+
+      <button type="submit">Predict Churn</button>
+    </form>
+
+    <div id="result" class="result"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('churnForm');
+    const resultDiv = document.getElementById('result');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Gather form data
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+
+      // Here you would send data to backend API for prediction.
+      // For demo, simulate prediction logic (random or simple rule)
+
+      // Example simple mock logic: churn if tenure < 3 or balance < 5000
+      const tenure = parseInt(data.tenure, 10);
+      const balance = parseFloat(data.balance);
+
+      let churnProbability = 0.2;
+      if (tenure < 3) churnProbability += 0.4;
+      if (balance < 5000) churnProbability += 0.3;
+      if (data.isActiveMember === '0') churnProbability += 0.1;
+
+      const isChurn = churnProbability > 0.5;
+
+      // Show result
+      resultDiv.style.display = 'block';
+      if (isChurn) {
+        resultDiv.textContent = '⚠️ Customer is likely to CHURN.';
+        resultDiv.className = 'result churn';
+      } else {
+        resultDiv.textContent = '✅ Customer is likely to STAY.';
+        resultDiv.className = 'result no-churn';
+      }
+    });
+  </script>
+
+</body>
+</html>
